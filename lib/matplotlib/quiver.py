@@ -211,6 +211,9 @@ Keyword arguments:
     A dictionary with keyword arguments accepted by the
     :class:`~matplotlib.font_manager.FontProperties` initializer:
     *family*, *style*, *variant*, *size*, *weight*
+  
+  *vswap*:
+    Swap the default horizontal quiverkey by a vertical aligned key
 
 Any additional keyword arguments are used to override vector
 properties taken from *Q*.
@@ -240,6 +243,7 @@ class QuiverKey(martist.Artist):
         self.color = kw.pop('color', None)
         self.label = label
         self._labelsep_inches = kw.pop('labelsep', 0.1)
+        self._vswap = kw.pop('vswap',False)
         self.labelsep = (self._labelsep_inches * Q.ax.figure.dpi)
 
         # try to prevent closure over the real self
@@ -295,6 +299,10 @@ class QuiverKey(martist.Artist):
             # Hack: save and restore the Umask
             _mask = self.Q.Umask
             self.Q.Umask = ma.nomask
+            if self._vswap:
+            self.verts = self.Q._make_verts(np.zeros((1,)),
+                                            np.array([self.U]))
+            else:
             self.verts = self.Q._make_verts(np.array([self.U]),
                                             np.zeros((1,)))
             self.Q.Umask = _mask
